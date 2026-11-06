@@ -2189,7 +2189,7 @@ std::string savePointsImage(const std::vector<std::vector<Point>>& groups, int P
     return fullPath;
 }
 
-static PK_ERROR_code_t create_bsurf_from_onnurbs(const ON_NurbsSurface& nurbs, PK_BSURF_t& bsurf)
+PK_ERROR_code_t create_bsurf_from_onnurbs(const ON_NurbsSurface& nurbs, PK_BSURF_t& bsurf)
 {
     
     if (nurbs.IsRational()) {

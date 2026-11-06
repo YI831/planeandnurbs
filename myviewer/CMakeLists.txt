@@ -36,7 +36,8 @@ target_link_libraries (${PROJECT_NAME} PRIVATE ${EXTERNAL_LIBRARY_OPENNURBS_LIB_
 ######################################################################parasolid
 if(CASGEO_ENABLE_PARASOLID)
     target_include_directories(${PROJECT_NAME}  PRIVATE ${PARASOLID_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME}  PRIVATE ${PARASOLID_PSKERNEL_LIBRARY})
+    target_link_libraries(${PROJECT_NAME} PRIVATE parasolid_kernel)
+    casgeo_copy_parasolid_runtime(${PROJECT_NAME})
 endif()
 
 ################################################################################

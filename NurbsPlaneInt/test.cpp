@@ -1614,7 +1614,17 @@ void nurbsintersection_Parasolid( ON_NurbsSurface& nurbs1, ON_NurbsSurface& nurb
 
     PK_ERROR_code_t err1 = create_bsurf_from_onnurbs(nurbs1, bsurf1);
     PK_ERROR_code_t err2 = create_bsurf_from_onnurbs(nurbs2, bsurf2);
-    if (bsurf1 == PK_ENTITY_null || bsurf2 == PK_ENTITY_null) return;
+    if (err1 != PK_ERROR_no_errors || bsurf1 == PK_ENTITY_null) {
+        std::cerr << "Parasolid conversion failed for surface 1: " << err1 << std::endl;
+        if (bsurf2 != PK_ENTITY_null)
+            PK_ENTITY_delete(1, &bsurf2);
+        return;
+    }
+    if (err2 != PK_ERROR_no_errors || bsurf2 == PK_ENTITY_null) {
+        std::cerr << "Parasolid conversion failed for surface 2: " << err2 << std::endl;
+        PK_ENTITY_delete(1, &bsurf1);
+        return;
+    }
 
     // 2. Çó½»
     PK_SURF_intersect_surf_o_t opts;
@@ -1631,6 +1641,16 @@ void nurbsintersection_Parasolid( ON_NurbsSurface& nurbs1, ON_NurbsSurface& nurb
         &n_vectors, &vectors,
         &n_curves, &curves, &bounds, &types
     );
+    if (err != PK_ERROR_no_errors) {
+        std::cerr << "Parasolid surface intersection failed: " << err << std::endl;
+        if (vectors) PK_MEMORY_free(vectors);
+        if (curves)  PK_MEMORY_free(curves);
+        if (bounds)  PK_MEMORY_free(bounds);
+        if (types)   PK_MEMORY_free(types);
+        PK_ENTITY_delete(1, &bsurf1);
+        PK_ENTITY_delete(1, &bsurf2);
+        return;
+    }
 
  
 

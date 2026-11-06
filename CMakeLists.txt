@@ -126,11 +126,54 @@ endif(CASGEO_ENABLE_OCC)
 # ============================================================
 # Parasolid solver
 # ============================================================
-set(PARASOLID_ROOT "D:/project/ParaSolid-Local/EnvX64" CACHE PATH "Parasolid installation directory")
-set(PARASOLID_PSKERNEL_LIBRARY "D:/project/ParaSolid-Local/EnvX64/dll/pskernel.lib")
-set(PARASOLID_INCLUDE_DIR "${PARASOLID_ROOT}")
-set(PARASOLID_LIB          "${PARASOLID_ROOT}/dll/pskernel.lib")
-set(PARASOLID_DLL          "${PARASOLID_ROOT}/dll/pskernel.dll")
+if(CASGEO_ENABLE_PARASOLID)
+    if(NOT PARASOLID_ROOT)
+        if(DEFINED ENV{PARASOLID_ROOT})
+            file(TO_CMAKE_PATH "$ENV{PARASOLID_ROOT}" PARASOLID_ROOT)
+        else()
+            set(PARASOLID_ROOT "D:/project/ParaSolid-Local/EnvX64")
+        endif()
+    endif()
+
+    set(PARASOLID_ROOT "${PARASOLID_ROOT}" CACHE PATH "Parasolid installation directory")
+    set(PARASOLID_INCLUDE_DIR "${PARASOLID_ROOT}" CACHE PATH "Parasolid include directory")
+    set(PARASOLID_PSKERNEL_LIBRARY "${PARASOLID_ROOT}/dll/pskernel.lib" CACHE FILEPATH "Parasolid kernel import library")
+    set(PARASOLID_DLL "${PARASOLID_ROOT}/dll/pskernel.dll" CACHE FILEPATH "Parasolid kernel runtime library")
+
+    foreach(required_file IN ITEMS
+            "${PARASOLID_INCLUDE_DIR}/parasolid_kernel.h"
+            "${PARASOLID_PSKERNEL_LIBRARY}"
+            "${PARASOLID_DLL}")
+        if(NOT EXISTS "${required_file}")
+            message(FATAL_ERROR
+                "Parasolid support is enabled, but a required file is missing: ${required_file}
+"
+                "Set PARASOLID_ROOT (or the corresponding cached file path) to the correct Parasolid installation.")
+        endif()
+    endforeach()
+
+    if(NOT TARGET parasolid_kernel)
+        add_library(parasolid_kernel SHARED IMPORTED GLOBAL)
+        set_target_properties(parasolid_kernel PROPERTIES
+            IMPORTED_IMPLIB "${PARASOLID_PSKERNEL_LIBRARY}"
+            IMPORTED_LOCATION "${PARASOLID_DLL}"
+            INTERFACE_INCLUDE_DIRECTORIES "${PARASOLID_INCLUDE_DIR}")
+    endif()
+
+    message(STATUS "Parasolid support: ON (${PARASOLID_ROOT})")
+else()
+    message(STATUS "Parasolid support: OFF")
+endif()
+
+function(casgeo_copy_parasolid_runtime target)
+    if(CASGEO_ENABLE_PARASOLID AND WIN32)
+        add_custom_command(TARGET ${target} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${PARASOLID_DLL}"
+                    "$<TARGET_FILE_DIR:${target}>"
+            VERBATIM)
+    endif()
+endfunction()
 
 
 ################################################################################

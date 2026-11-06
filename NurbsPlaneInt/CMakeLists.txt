@@ -26,7 +26,7 @@ $<$<CONFIG:Release>:${OCC_DLL_LIBS}>)
 ######################################################################parasolid
 if(CASGEO_ENABLE_PARASOLID)
     target_include_directories(${PROJECT_NAME}  PRIVATE ${PARASOLID_INCLUDE_DIR})
-    target_link_libraries(${PROJECT_NAME}  PRIVATE ${PARASOLID_PSKERNEL_LIBRARY})
+    target_link_libraries(${PROJECT_NAME} PRIVATE parasolid_kernel)
 endif()
 
 ################################################################################

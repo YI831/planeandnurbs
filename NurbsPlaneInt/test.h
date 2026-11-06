@@ -2,7 +2,8 @@
 
 #include <cmath>
 #include <Eigen/Dense>
-#include "D:\安装文件\opennurbs\opennurbs.h"
+#include "opennurbs.h"
+#include "parasolid_kernel.h"
 #include <3rd_party/SISL/include/sisl.h>
 #include <3rd_party/SISL/include/sislP.h>
 
@@ -124,7 +125,7 @@ ON_3dPoint GetPointOnNURBSSurface(const ON_NurbsSurface& nurbs_surf, double u, d
 
 Vector3a GetDUVOnNURBSSurface(const ON_NurbsSurface& nurbs_surf, double u, double v, int d);
 
-static PK_ERROR_code_t create_bsurf_from_onnurbs(const ON_NurbsSurface& nurbs, PK_BSURF_t& bsurf);
+PK_ERROR_code_t create_bsurf_from_onnurbs(const ON_NurbsSurface& nurbs, PK_BSURF_t& bsurf);
 
 int ConvexHullOnSplinedSurface(const ON_NurbsSurface& nurbS);
 
