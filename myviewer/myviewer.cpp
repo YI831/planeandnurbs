@@ -624,17 +624,6 @@ void MyViewer::intersectionparasolid()
    
     // 惰性启动：整个进程只启动一次
     static bool parasolid_started = false;
-    if (!parasolid_started) {
-        PK_SESSION_start_o_t start_options;
-        PK_SESSION_start_o_m(start_options);
-        PK_ERROR_code_t start_err = PK_SESSION_start(&start_options);
-        if (start_err != PK_ERROR_no_errors) {
-            std::cerr << "Parasolid start failed (error " << static_cast<int>(start_err)
-                      << "). Check CASGEO_ENABLE_PARASOLID, PARASOLID_ROOT, and pskernel.dll." << std::endl;
-            return;
-        }
-        parasolid_started = true;
-    }
     // surf
     NurbsObject* nurbsobj = dynamic_cast<NurbsObject*>(mymod.surf);
 
